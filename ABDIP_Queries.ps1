@@ -1,4 +1,3 @@
-# Define the ASCII art as a multi-line string with color codes
     $art = @'
                    _,--._
                __/ <a a\__
@@ -15,7 +14,7 @@
              \__/     \__/   \__/
 '@
 
-#Display the ASCII art with color
+#Display art
 Write-Host $art
 
 # Prompt the user to enter the API key for AbuseIPDB
