@@ -1,3 +1,23 @@
+# Define the ASCII art as a multi-line string with color codes
+    $art = @'
+                   _,--._
+               __/ <a a\__
+            .-"\; \,__/\ \";"-.
+           /     )__"/  \__\(__ \
+         /   __/  o)_ \ / _(o  \_
+        /____\(   /   \/   \)____\
+                \_/^\/^\/^\/^\/^\/^\/
+                      ||||
+                     _||||_
+             ____,--'\_\/_/`--..__
+            /    /<a     \\     \   \
+            (    /   \    / \    \   )
+             \__/     \__/   \__/
+'@
+
+#Display the ASCII art with color
+Write-Host $art
+
 # Prompt the user to enter the API key for AbuseIPDB
 $apiKey = Read-Host "Enter your AbuseIPDB API key"
 
@@ -25,9 +45,11 @@ function Query-AbuseIPDB($ip) {
         $country = $countryResponse.name
 
         # Print a warning message to the user
+        Write-Host "-------------------------------------------------------------------------------------------------------------------"
         Write-Host "Warning: $ip ($domain, $country) is listed on the AbuseIPDB with a score of $($response.data.abuseConfidenceScore)"
     }
     else {
+        Write-Host "-----------------------------------------------"
         Write-Host "$ip is not listed on the AbuseIPDB"
     }
 }
@@ -35,7 +57,7 @@ function Query-AbuseIPDB($ip) {
 # Display the menu
 # Display the menu
 do {
-    Write-Host "---------------------"
+    Write-Host "-------------------------------------------------------------------------------------------------------------------"
     Write-Host "AbuseIPDB Lookup Menu"
     Write-Host "1. Query a single IP"
     Write-Host "2. Query multiple IPs"
