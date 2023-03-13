@@ -33,6 +33,7 @@ function Query-AbuseIPDB($ip) {
 }
 
 # Display the menu
+# Display the menu
 do {
     Write-Host "---------------------"
     Write-Host "AbuseIPDB Lookup Menu"
@@ -41,13 +42,13 @@ do {
     Write-Host "3. Query netstat -ano Foreign Address Only"
     Write-Host "4. Exit"
     $choice = Read-Host "Enter your choice (1, 2, 3, or 4)"
-    
+
     # Handle the user's choice
     switch ($choice) {
         1 {
             # Prompt the user to enter an IP address
             $ipAddress = Read-Host "Enter the IP address to check"
-            
+
             # Query the AbuseIPDB API for the specified IP address
             Query-AbuseIPDB $ipAddress
         }
@@ -55,7 +56,7 @@ do {
             # Prompt the user to enter a list of IP addresses
             $ipList = Read-Host "Enter a comma-separated list of IP addresses to check"
             $ips = $ipList.Split(",").Trim()
-            
+
             # Iterate through each IP address in the list
             foreach ($ip in $ips) {
                 # Query the AbuseIPDB API for the current IP address
@@ -63,41 +64,27 @@ do {
             }
         }
         3 {
-    # Run the netstat command to get a list of active network connections
-    $netstatOutput = netstat -ano
-    
-    # Extract the IP addresses from the netstat output using a regular expression
-    $ips = [regex]::Matches($netstatOutput, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}").Value | Sort-Object -Unique
-    
-    # Filter out private IP addresses
-    $publicIps = @()
-    foreach ($ip in $ips) {
-        $ipBytes = [IPAddress]$ip
-        if ($ipBytes.AddressFamily -eq "InterNetwork" -and
-            !$ipBytes.AddressFamily.IsIPv6LinkLocal -and
-            !$ipBytes.AddressFamily.IsIPv6Multicast -and
-            !$ipBytes.AddressFamily.IsIPv6SiteLocal -and
-            !$ipBytes.AddressFamily.IsIPv6Teredo -and
-            !$ipBytes.AddressFamily.IsIPv6UniqueLocal -and
-            !$ipBytes.IsIPv6SiteLocal -and
-            !$ipBytes.IsIPv6Teredo -and
-            !$ipBytes.IsIPv6LinkLocal -and
-            $ipBytes.Address -notmatch "^127\." -and
-            $ipBytes.Address -notmatch "^169\.254\." -and
-            $ipBytes.Address -notmatch "^192\.168\." -and
-            $ipBytes.Address -notmatch "^10\." -and
-            $ipBytes.Address -notmatch "^172\.(1[6-9]|2[0-9]|3[0-1])\.")
-        {
-            $publicIps += $ip
-        }
-    }
+            # Run the netstat command to get a list of active network connections
+            $netstatOutput = netstat -ano
 
-    # Iterate through each public IP address in the list
-    foreach ($ip in $publicIps) {
-        # Query the AbuseIPDB API for the current IP address
-        Query-AbuseIPDB $ip
+            # Extract the IP addresses from the netstat output using a regular expression
+            $ips = [regex]::Matches($netstatOutput, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}").Value | Sort-Object -Unique
+
+            # Filter out private IP addresses
+            $publicIps = @()
+            foreach ($ip in $ips) {
+                $ipBytes = [IPAddress]::Parse($ip).GetAddressBytes()
+                if ($ipBytes[0] -ne 10 -and ($ipBytes[0] -ne 172 -or $ipBytes[1] -lt 16 -or $ipBytes[1] -gt 31) -and ($ipBytes[0] -ne 192 -or $ipBytes[1] -ne 168)) {
+                    $publicIps += $ip
+                }
+            }
+
+            # Iterate through each public IP address in the list
+            foreach ($ip in $publicIps) {
+                # Query the AbuseIPDB API for the current IP address
+                Query-AbuseIPDB $ip
+            }
         }
-    }
         4 {
             # Exit the script
             break
@@ -107,4 +94,4 @@ do {
             Write-Host "Invalid choice. Please enter a valid option (1, 2, 3, or 4)."
         }
     }
-} while ($true)
+} while ($choice -ne '4')
