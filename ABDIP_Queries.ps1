@@ -14,15 +14,13 @@
              \__/     \__/   \__/
 '@
 
-#Display the ASCII art with color
+
 Write-Host $art
 
-# Prompt the user to enter the API key for AbuseIPDB
 $apiKey = Read-Host "Enter your AbuseIPDB API key"
 
 # Define a function to query the AbuseIPDB API
 function Query-AbuseIPDB($ip) {
-    # Build the URL for the AbuseIPDB API
     $url = "https://api.abuseipdb.com/api/v2/check?ipAddress=$ip&maxAgeInDays=90"
 
     # Create a new HTTP request with the API key in the headers
@@ -52,9 +50,6 @@ function Query-AbuseIPDB($ip) {
         Write-Host "$ip is not listed on the AbuseIPDB"
     }
 }
-
-# Display the menu
-# Display the menu
 do {
     Write-Host "-------------------------------------------------------------------------------------------------------------------"
     Write-Host "AbuseIPDB Lookup Menu"
@@ -64,23 +59,15 @@ do {
     Write-Host "4. Exit"
     $choice = Read-Host "Enter your choice (1, 2, 3, or 4)"
 
-    # Handle the user's choice
     switch ($choice) {
         1 {
-            # Prompt the user to enter an IP address
             $ipAddress = Read-Host "Enter the IP address to check"
-
-            # Query the AbuseIPDB API for the specified IP address
             Query-AbuseIPDB $ipAddress
         }
         2 {
-            # Prompt the user to enter a list of IP addresses
             $ipList = Read-Host "Enter a comma-separated list of IP addresses to check"
             $ips = $ipList.Split(",").Trim()
-
-            # Iterate through each IP address in the list
             foreach ($ip in $ips) {
-                # Query the AbuseIPDB API for the current IP address
                 Query-AbuseIPDB $ip
             }
         }
@@ -99,19 +86,14 @@ do {
                     $publicIps += $ip
                 }
             }
-
-            # Iterate through each public IP address in the list
             foreach ($ip in $publicIps) {
-                # Query the AbuseIPDB API for the current IP address
                 Query-AbuseIPDB $ip
             }
         }
         4 {
-            # Exit the script
             break
         }
         default {
-            # Invalid choice
             Write-Host "Invalid choice. Please enter a valid option (1, 2, 3, or 4)."
         }
     }
